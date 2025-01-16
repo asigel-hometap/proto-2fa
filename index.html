@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Form Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+(function (m, a, z, e) {
+  var s, t;
+  try {
+    t = m.sessionStorage.getItem(‘maze-us’);
+  } catch (err) {}
+  if (!t) {
+    t = new Date().getTime();
+    try {
+      m.sessionStorage.setItem(‘maze-us’, t);
+    } catch (err) {}
+  }
+  s = a.createElement(‘script’);
+  s.src = z + ‘?apiKey=’ + e;
+  s.async = true;
+  a.getElementsByTagName(‘head’)[0].appendChild(s);
+  m.mazeUniversalSnippetApiKey = e;
+})(window, document, ‘https://snippet.maze.co/maze-universal-loader.js’, ‘1b71ac3f-702c-4429-9277-e74c84d61aa7’);
+    </script>
+    <style>
+        body {
+            font-family: 'Mulish', sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button {
+            background-color: #ccc;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: not-allowed;
+        }
+
+        button.active {
+            background-color: #366CED;
+            cursor: pointer;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input, select {
+            margin-bottom: 20px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-page {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            height: 10px;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #366CED;
+            width: 50%; /* Update this width dynamically for progress */
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-container input {
+            margin-right: 10px;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="page-1" class="form-page">
+    <div class="progress-bar">
+        <div class="progress" style="width: 50%;"></div>
+    </div>
+    <h1>Good news! You qualify!</h1>
+    <h2>If you'd like to see a no-obligation estimate, we just need a little information about you.</h2>
+
+    <label for="dob">Date of Birth</label>
+    <input type="date" id="dob" required>
+
+    <button id="page-1-button" disabled>Continue</button>
+</div>
+
+<div id="page-2" class="form-page hidden">
+    <div class="progress-bar">
+        <div class="progress" style="width: 100%;"></div>
+    </div>
+    <h1>Good news! You qualify!</h1>
+    <h2>Take a look and confirm we got everything right to keep going. If something is not correct, go ahead and edit it!</h2>
+
+    <label for="first-name">First Name</label>
+    <input type="text" id="first-name" value="Steve" required>
+
+    <label for="last-name">Last Name</label>
+    <input type="text" id="last-name" value="Example" required>
+
+    <label for="email">Email Address</label>
+    <input type="email" id="email" value="steve.example@email.com" required>
+
+    <label for="phone">Phone Number</label>
+    <input type="text" id="phone" value="123-456-7890" required>
+
+    <label for="dob-confirm">Date of Birth</label>
+    <input type="date" id="dob-confirm" required>
+
+    <label for="ssn">Social Security Number</label>
+    <input type="password" id="ssn" value="123-45-6789" required>
+
+    <div class="checkbox-container">
+        <input type="checkbox" id="terms"> 
+        <label for="terms">By checking this box, you are agreeing to our terms of service.</label>
+    </div>
+
+    <button id="page-2-button" disabled>Continue</button>
+</div>
+
+<script>
+    function checkPage1Fields() {
+        const dob = document.getElementById('dob').value.trim();
+        const button = document.getElementById('page-1-button');
+
+        if (dob) {
+            button.disabled = false;
+            button.classList.add('active');
+        } else {
+            button.disabled = true;
+            button.classList.remove('active');
+        }
+    }
+
+    function checkPage2Fields() {
+        const firstName = document.getElementById('first-name').value.trim();
+        const lastName = document.getElementById('last-name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const dob = document.getElementById('dob-confirm').value.trim();
+        const ssn = document.getElementById('ssn').value.trim();
+        const terms = document.getElementById('terms').checked;
+        const button = document.getElementById('page-2-button');
+
+        if (firstName && lastName && email && phone && dob && ssn && terms) {
+            button.disabled = false;
+            button.classList.add('active');
+        } else {
+            button.disabled = true;
+            button.classList.remove('active');
+        }
+    }
+
+    document.getElementById('dob').addEventListener('input', checkPage1Fields);
+
+    document.getElementById('page-1-button').addEventListener('click', () => {
+        const dob = document.getElementById('dob').value;
+        document.getElementById('dob-confirm').value = dob;
+
+        document.getElementById('page-1').classList.add('hidden');
+        document.getElementById('page-2').classList.remove('hidden');
+    });
+
+    document.getElementById('first-name').addEventListener('input', checkPage2Fields);
+    document.getElementById('last-name').addEventListener('input', checkPage2Fields);
+    document.getElementById('email').addEventListener('input', checkPage2Fields);
+    document.getElementById('phone').addEventListener('input', checkPage2Fields);
+    document.getElementById('dob-confirm').addEventListener('input', checkPage2Fields);
+    document.getElementById('ssn').addEventListener('input', checkPage2Fields);
+    document.getElementById('terms').addEventListener('change', checkPage2Fields);
+</script>
+
+</body>
+</html>

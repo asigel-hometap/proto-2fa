@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2FA Form Prototype</title>
-    <script>(function (m, a, z, e) {
-  var s, t;
-  try {
-    t = m.sessionStorage.getItem('maze-us');
-  } catch (err) {}
-
-  if (!t) {
-    t = new Date().getTime();
-    try {
-      m.sessionStorage.setItem('maze-us', t);
-    } catch (err) {}
-  }
-
-  s = a.createElement('script');
-  s.src = z + '?apiKey=' + e;
-  s.async = true;
-  a.getElementsByTagName('head')[0].appendChild(s);
-  m.mazeUniversalSnippetApiKey = e;
-})(window, document, 'https://snippet.maze.co/maze-universal-loader.js', '1b71ac3f-702c-4429-9277-e74c84d61aa7');
+    <title>Multi-Page Form Prototype</title>
+    <script>
+        (function (m, a, z, e) {
+          var s, t;
+          try {
+            t = m.sessionStorage.getItem(‘maze-us’);
+          } catch (err) {}
+          if (!t) {
+            t = new Date().getTime();
+            try {
+              m.sessionStorage.setItem(‘maze-us’, t);
+            } catch (err) {}
+          }
+          s = a.createElement(‘script’);
+          s.src = z + ‘?apiKey=’ + e;
+          s.async = true;
+          a.getElementsByTagName(‘head’)[0].appendChild(s);
+          m.mazeUniversalSnippetApiKey = e;
+        })(window, document, 'https://snippet.maze.co/maze-universal-loader.js’, ‘1b71ac3f-702c-4429-9277-e74c84d61aa7’);
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -32,34 +31,8 @@
             padding: 0;
         }
 
-        h1 {
-            font-weight: 1000;
-            font-size: 38px;
-            line-height: 50px;
-        }
-
-        h2 {
-            font-weight: 400;
-            font-size: 18px;
-            line-height: 30px;
-        }
-
-        input {
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            padding: 14px 4px;
-            gap: 14px;
-
-            width: 536px;
-            height: 48px;
-
-            border-bottom: 1px solid #919AAC;
-            flex: none;
-            order: 0;
-            align-self: stretch;
-            flex-grow: 0;
+        .hidden {
+            display: none;
         }
 
         button {
@@ -73,25 +46,28 @@
             width: 200px;
             height: 56px;
             border-radius: 6px;
-            flex: none;
-            order: 1;
-            flex-grow: 0;
+            margin: 40px auto;
+            background-color: #ccc;
+            color: #fff;
+            cursor: not-allowed;
         }
 
         button.active {
-            background: #366CED;
-            color: #fff;
-        }
-
-        button.inactive {
-            background: #919AAC;
-            color: #fff;
-            cursor: not-allowed;
+            background-color: #366CED;
+            cursor: pointer;
         }
 
         label {
             display: block;
             margin-bottom: 10px;
+        }
+
+        input, select {
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            padding: 8px;
+            width: 100%;
+            border-bottom: 1px solid #919AAC;
         }
 
         .form-page {
@@ -115,16 +91,42 @@
         .checkbox-container {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
 
         .checkbox-container input {
             margin-right: 10px;
+            height: 20px;
+            width: 20px;
         }
 
         .error {
             color: red;
             font-size: 12px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -137,10 +139,16 @@
     <h1>Good news! You qualify!</h1>
     <h2>If you'd like to see a no-obligation estimate, we just need a little information about you.</h2>
 
-    <label for="dob">Date of Birth</label>
-    <input type="date" id="dob" required>
+    <label for="first-name">First Name</label>
+    <input type="text" id="first-name" required>
 
-    <button id="page-1-button" class="inactive" disabled>Continue</button>
+    <label for="last-name">Last Name</label>
+    <input type="text" id="last-name" required>
+
+    <label for="ssn">Social Security Number</label>
+    <input type="password" id="ssn" required>
+
+    <button id="page-1-button" disabled>Continue</button>
 </div>
 
 <div id="page-2" class="form-page hidden">
@@ -148,87 +156,116 @@
         <div class="progress" style="width: 100%;"></div>
     </div>
     <h1>Good news! You qualify!</h1>
-    <h2>Take a look and confirm we got everything right to keep going. If something is not correct, go ahead and edit it!</h2>
-
-    <label for="first-name">First Name</label>
-    <input type="text" id="first-name" value="Steve" required>
-
-    <label for="last-name">Last Name</label>
-    <input type="text" id="last-name" value="Example" required>
+    <h2>If you'd like to see a no-obligation estimate, we just need a little information about you.</h2>
 
     <label for="email">Email Address</label>
-    <input type="email" id="email" value="steve.example@email.com" required>
+    <input type="email" id="email" required>
+    <div id="email-error" class="error hidden">Please enter a valid email address.</div>
 
     <label for="phone">Phone Number</label>
-    <input type="text" id="phone" value="123-456-7890" required>
+    <input type="text" id="phone" required>
+    <div id="phone-error" class="error hidden">Phone number must be exactly 10 digits.</div>
 
-    <label for="dob-confirm">Date of Birth</label>
-    <input type="date" id="dob-confirm" required>
-
-    <label for="ssn">Social Security Number</label>
-    <input type="password" id="ssn" value="123-45-6789" required>
+    <label for="referral">How did you hear about us?</label>
+    <select id="referral">
+        <option value="">-- Select --</option>
+        <option value="facebook">Facebook</option>
+        <option value="tiktok">TikTok</option>
+        <option value="instagram">Instagram</option>
+        <option value="radio">Radio</option>
+    </select>
 
     <div class="checkbox-container">
         <input type="checkbox" id="terms"> 
         <label for="terms">By checking this box, you are agreeing to our terms of service.</label>
     </div>
 
-    <button id="page-2-button" class="inactive" disabled>Continue</button>
+    <button id="page-2-button" disabled>Continue</button>
+</div>
+
+<div id="completion-modal" class="modal">
+    <div class="modal-content">
+        <h1>Thank you! You have completed this portion of the test.</h1>
+    </div>
 </div>
 
 <script>
     function checkPage1Fields() {
-        const dob = document.getElementById('dob').value.trim();
+        const firstName = document.getElementById('first-name').value.trim();
+        const lastName = document.getElementById('last-name').value.trim();
+        const ssn = document.getElementById('ssn').value.trim();
         const button = document.getElementById('page-1-button');
 
-        if (dob) {
+        if (firstName && lastName && ssn) {
             button.disabled = false;
-            button.classList.remove('inactive');
             button.classList.add('active');
         } else {
             button.disabled = true;
             button.classList.remove('active');
-            button.classList.add('inactive');
+        }
+    }
+
+    function validateEmail() {
+        const email = document.getElementById('email').value.trim();
+        const emailError = document.getElementById('email-error');
+
+        if (!email.includes('@')) {
+            emailError.classList.remove('hidden');
+        } else {
+            emailError.classList.add('hidden');
+        }
+    }
+
+    function validatePhone() {
+        const phone = document.getElementById('phone').value.trim();
+        const phoneError = document.getElementById('phone-error');
+
+        if (!/^[0-9]{10}$/.test(phone)) {
+            phoneError.classList.remove('hidden');
+        } else {
+            phoneError.classList.add('hidden');
         }
     }
 
     function checkPage2Fields() {
-        const firstName = document.getElementById('first-name').value.trim();
-        const lastName = document.getElementById('last-name').value.trim();
         const email = document.getElementById('email').value.trim();
         const phone = document.getElementById('phone').value.trim();
-        const dob = document.getElementById('dob-confirm').value.trim();
-        const ssn = document.getElementById('ssn').value.trim();
+        const referral = document.getElementById('referral').value;
         const terms = document.getElementById('terms').checked;
         const button = document.getElementById('page-2-button');
+        const emailValid = document.getElementById('email-error').classList.contains('hidden');
+        const phoneValid = document.getElementById('phone-error').classList.contains('hidden');
 
-        if (firstName && lastName && email && phone && dob && ssn && terms) {
+        if (email && phone && referral && terms && emailValid && phoneValid) {
             button.disabled = false;
-            button.classList.remove('inactive');
             button.classList.add('active');
         } else {
             button.disabled = true;
             button.classList.remove('active');
-            button.classList.add('inactive');
         }
     }
 
-    document.getElementById('dob').addEventListener('input', checkPage1Fields);
+    document.getElementById('first-name').addEventListener('input', checkPage1Fields);
+    document.getElementById('last-name').addEventListener('input', checkPage1Fields);
+    document.getElementById('ssn').addEventListener('input', checkPage1Fields);
 
     document.getElementById('page-1-button').addEventListener('click', () => {
-        const dob = document.getElementById('dob').value;
-        document.getElementById('dob-confirm').value = dob;
-
         document.getElementById('page-1').classList.add('hidden');
         document.getElementById('page-2').classList.remove('hidden');
     });
 
-    document.getElementById('first-name').addEventListener('input', checkPage2Fields);
-    document.getElementById('last-name').addEventListener('input', checkPage2Fields);
+    document.getElementById('page-2-button').addEventListener('click', () => {
+        const completionModal = document.getElementById('completion-modal');
+        completionModal.classList.add('active');
+    });
+
+    document.getElementById('email').addEventListener('blur', validateEmail);
     document.getElementById('email').addEventListener('input', checkPage2Fields);
-    document.getElementById('phone').addEventListener('input', checkPage2Fields);
-    document.getElementById('dob-confirm').addEventListener('input', checkPage2Fields);
-    document.getElementById('ssn').addEventListener('input', checkPage2Fields);
+    document.getElementById('phone').addEventListener('input', () => {
+        validatePhone();
+        checkPage2Fields();
+    });
+    document.getElementById('referral').addEventListener('change', checkPage2Fields);
     document.getElementById('terms').addEventListener('change', checkPage2Fields);
 </script>
 
